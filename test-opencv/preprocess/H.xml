@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<warp_pers_H type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    1.4406286313556624e+00 -3.2804350497800537e-03
+    1.3041519815420943e+02 1.0821186525054536e-02 1.6310544178726234e+00
+    9.4169946985312848e+01 -8.0647188864874659e-06
+    1.0383137829300140e-05 1.</data></warp_pers_H>
+</opencv_storage>
