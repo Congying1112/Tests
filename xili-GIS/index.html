@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>西丽水库地理信息系统</title>
+    <meta charset="utf-8">
+    <link href="./content/shared/styles/examples-offline.css" rel="stylesheet">
+    <link href="./styles/kendo.common.min.css" rel="stylesheet">
+    <link href="./styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href="./styles/kendo.default.min.css" rel="stylesheet">
+    <link href="./styles/kendo.default.mobile.min.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/jszip.min.js"></script>
+    <script src="./js/kendo.all.min.js"></script>
+    <script src="./content/shared/js/console.js"></script>
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="./styles/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="./styles/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="./styles/dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="./js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body> 
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand">西丽水库地理信息系统</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="搜索">
+          </form>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <div id="treeview"></div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="row"><img id="map" src="./images/zoom_in2.png" style="height:20px"><img src="./images/zoom_out2.png" style="height:20px"><img src="./images/move.jpeg" style="height:20px"></div>
+            <div style="position: relative;"> 
+                <div style="position: absolute;top:9px;left:-10px;">
+                    <img id="sat_map" src="./images/sat_map.png" style="width:101.2%;opacity:0.4" hidden="true">
+                </div>  
+                <img src="./images/map.png" style="width:100%;left:0px"/>
+            </div> 
+            <div class="row" style="width:100%;position:relative;bottom:0px;"">Balabala, 一些信息</div>
+        </div>
+      </div>
+    </div>
+<script>
+    $("#treeview").kendoTreeView({
+        checkboxes: {
+            checkChildren: true
+        },
+        check: onCheck,
+        dataSource: [
+            {
+                id: 2, text: "地理数据", expanded: true, spriteCssClass: "folder", items: [
+                    { id: 3, text: "卫星图", spriteCssClass: "html", elem: "#sat_map"},
+                    { id: 4, text: "街道行政区隔", spriteCssClass: "html" }
+                ]
+            },
+            {
+                id: 6, text: "水库", expanded: true, spriteCssClass: "folder", items: [
+                    { id: 7, text: "一级水源保护区", spriteCssClass: "pdf" },
+                    { id: 8, text: "二级水源保护区", spriteCssClass: "pdf" },
+                    { id: 9, text: "外围线", spriteCssClass: "pdf" }]
+            },
+            {
+                id: 10, text: "征收情况", expanded: true, spriteCssClass: "folder", items: [
+                    { id: 11, text: "已征收", spriteCssClass: "pdf" },
+                    { id: 12, text: "待征收", spriteCssClass: "pdf" }
+                ]
+            }
+        ]
+    });
+
+    // function that gathers IDs of checked nodes
+    function checkedNodeIds(nodes, checkedNodes) {
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].checked) {
+                if (nodes[i].elem != undefined)
+                    $(nodes[i].elem).show()
+            } else {
+                if (nodes[i].elem != undefined)
+                    $(nodes[i].elem).hide()
+            }
+
+            if (nodes[i].hasChildren) {
+                checkedNodeIds(nodes[i].children.view(), checkedNodes);
+            }
+        }
+    }
+
+    // show checked node IDs on datasource change
+    function onCheck() {
+        var checkedNodes = [],
+            treeView = $("#treeview").data("kendoTreeView"),
+            message;
+
+        checkedNodeIds(treeView.dataSource.view(), checkedNodes);
+
+        if (checkedNodes.length > 0) {
+            message = "IDs of checked nodes: " + checkedNodes.join(",");
+        } else {
+            message = "No nodes checked.";
+        }
+
+        $("#result").html(message);
+    }
+</script>
+
+<style>
+    #treeview .k-sprite {
+        background-image: url("../content/web/treeview/coloricons-sprite.png");
+    }
+
+    .rootfolder { background-position: 0 0; }
+    .folder     { background-position: 0 -16px; }
+    .pdf        { background-position: 0 -32px; }
+    .html       { background-position: 0 -48px; }
+    .image      { background-position: 0 -64px; }
+
+</style>
+</body>
+</html>
